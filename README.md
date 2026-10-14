@@ -5,6 +5,10 @@
 用了一下发现能直接用。  
 你自己看[对话链接](https://share.gemini.google/vAmBH7tXSC1R)好吧。  
 
+## 运行方法
+
+下下来，用浏览器运行这个index.html文件即可。
+
 ## 理论依据
 
 Paul Nation的《学语言你需要知道什么》（详情见[此](https://github.com/ramen-curator/nation-foreign-language-guide-zh)）里提到的 “活动 6.1：重复听 (Activity 6.1: Repeated listening)”。  
@@ -22,4 +26,3 @@ Paul Nation的《学语言你需要知道什么》（详情见[此](https://gith
 ## 效果演示
 
 https://github.com/user-attachments/assets/0f90062f-9140-49dd-9a3c-6a712f063a8e
-
