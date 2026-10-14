@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity 6.1: 重复听流利度训练器 (Repeated Listening Trainer)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 600; }
+    header p { color: var(--text-secondary); font-size: 0.9rem; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .panel-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .form-group .hint {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    select, input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--surface);
+      font-family: inherit;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 150px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+    }
+
+    .range-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .range-row input[type="range"] { flex: 1; }
+    .range-val {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+      font-size: 0.9rem;
+      min-width: 54px;
+      text-align: right;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    button:hover:not(:disabled) { background: #f1f5f9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-warning { background: var(--warning); color: #fff; border-color: var(--warning); }
+    .btn-warning:hover:not(:disabled) { background: #b45309; }
+    .btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .btn-danger:hover:not(:disabled) { background: #b91c1c; }
+
+    /* 右侧训练区 */
+    .control-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #f1f5f9;
+      border-radius: var(--radius);
+    }
+
+    .status-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: var(--text);
+    }
+    .badge.active { background: #dcfce7; color: #166534; }
+    .badge.paused { background: #fef3c7; color: #92400e; }
+
+    .board-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 12px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s ease, border-color 0.15s ease, background-color 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100px;
+    }
+    .card:hover {
+      border-color: #94a3b8;
+      background: #f8fafc;
+    }
+    .card:active {
+      transform: scale(0.97);
+    }
+    .card-display {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .card-sub {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      display: none;
+    }
+    .show-sub .card-sub { display: block; }
+
+    /* 状态高亮 */
+    .card.correct-flash {
+      border-color: var(--success);
+      background-color: #dcfce7;
+    }
+    .card.wrong-flash {
+      border-color: var(--danger);
+      background-color: #fee2e2;
+    }
+    .card.reveal-flash {
+      border-color: var(--primary);
+      background-color: #dbeafe;
+    }
+
+    .options-bar {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    .options-bar label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Activity 6.1: 重复听流利度训练 (Repeated Listening)</h1>
+      <p>基于 Paul Nation 语言学习四主线（Four Strands）—— 听力解码速度与反应训练</p>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- 左侧配置与数据集管理 -->
+    <aside class="panel">
+      <div class="panel-title">
+        <span>1. 数据集配置</span>
+        <button id="btnNewSet" type="button" style="padding: 4px 8px; font-size: 0.8rem;">+ 新建</button>
+      </div>
+
+      <div class="form-group">
+        <label for="datasetSelect">选择预设 / 已保存数据集</label>
+        <select id="datasetSelect"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="datasetName">数据集名称</label>
+        <input type="text" id="datasetName" placeholder="例如：法语数字 1-10">
+      </div>
+
+      <div class="form-group">
+        <label for="voiceSelect">播报语言 / 语音引擎 (TTS)</label>
+        <select id="voiceSelect"></select>
+        <div class="hint">使用浏览器内置语音合成，支持断网使用。</div>
+      </div>
+
+      <div class="form-group">
+        <label for="dataPairs">数据对列表（每行一对，格式：<code>播报音频词 | 屏幕显示字符</code>）</label>
+        <textarea id="dataPairs" placeholder="six | 6&#10;three | 3"></textarea>
+        <div class="hint">若整行只有一个词，则播报与屏幕显示相同。</div>
+      </div>
+
+      <div class="btn-row" style="margin-bottom: 24px;">
+        <button id="btnSaveSet" class="btn-primary" type="button">保存 / 更新数据集</button>
+        <button id="btnDeleteSet" type="button">删除当前集</button>
+      </div>
+
+      <div class="panel-title">
+        <span>2. 训练与速度参数</span>
+      </div>
+
+      <div class="form-group">
+        <label>词间停顿时间 (说出 A 后等待多久说 B)</label>
+        <div class="range-row">
+          <input type="range" id="pauseInterval" min="0.2" max="5.0" step="0.1" value="1.8">
+          <span class="range-val" id="pauseIntervalVal">1.8 秒</span>
+        </div>
+        <div class="hint">核心训练指标：熟练后请逐步缩短停顿间隔，压缩大脑反应时间。</div>
+      </div>
+
+      <div class="form-group">
+        <label>单字发音语速 (TTS 语速微调)</label>
+        <div class="range-row">
+          <input type="range" id="speechRate" min="0.6" max="1.6" step="0.05" value="1.0">
+          <span class="range-val" id="speechRateVal">1.0x</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="repeatCount">每个词条在单轮训练中重复出现次数</label>
+        <input type="number" id="repeatCount" min="1" max="20" value="4">
+      </div>
+    </aside>
+
+    <!-- 右侧训练面板 -->
+    <main class="panel">
+      <div class="panel-title">
+        <span>训练看板 (Pointing & Recognition Board)</span>
+        <span id="scoreDisplay" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: normal;"></span>
+      </div>
+
+      <div class="control-bar">
+        <div class="btn-row">
+          <button id="btnStart" class="btn-primary" type="button">▶ 开始训练</button>
+          <button id="btnPause" class="btn-warning" type="button" disabled>⏸ 暂停 (Space)</button>
+          <button id="btnReplayWord" type="button" disabled>↺ 重播当前词</button>
+          <button id="btnStop" class="btn-danger" type="button" disabled>■ 结束</button>
+        </div>
+
+        <div class="status-box">
+          <span id="statusBadge" class="badge">就绪</span>
+          <span>进度: <strong id="progressText">0 / 0</strong></span>
+        </div>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div id="progressBar" class="progress-bar-fill"></div>
+      </div>
+
+      <div class="options-bar">
+        <label>
+          <input type="radio" name="interactionMode" value="point" checked>
+          <span><strong>指认模式（原书推荐）</strong>：听录音同时用手指/鼠标指向对应卡片（点击任意卡片可单独试听）</span>
+        </label>
+        <label>
+          <input type="radio" name="interactionMode" value="quiz">
+          <span><strong>点击自测模式</strong>：听到语音后，在停顿期内点击对应卡片验证对错</span>
+        </label>
+      </div>
+
+      <div class="options-bar">
+        <label>
+          <input type="checkbox" id="chkRevealAfter">
+          <span>在每次停顿结束前闪烁提示刚才播报的卡片（适合初期核对）</span>
+        </label>
+        <label>
+          <input type="checkbox" id="chkShowSub">
+          <span>在卡片下方直接显示外语原文（降低难度）</span>
+        </label>
+        <label>
+          <input type="checkbox" id="chkShuffleBoard">
+          <span>打乱看板排列顺序</span>
+        </label>
+      </div>
+
+      <div id="boardGrid" class="board-grid"></div>
+    </main>
+  </div>
+
+  <script>
+    // 预设数据集
+    const DEFAULT_DATASETS = [
+      {
+        id: 'en-numbers',
+        name: '英语：基础数字 (1-10)',
+        lang: 'en-US',
+        pairs: `one | 1\ntwo | 2\nthree | 3\nfour | 4\nfive | 5\nsix | 6\nseven | 7\neight | 8\nnine | 9\nten | 10`
+      },
+      {
+        id: 'en-days',
+        name: '英语：星期 (Monday - Sunday)',
+        lang: 'en-US',
+        pairs: `Monday | 周一\nTuesday | 周二\nWednesday | 周三\nThursday | 周四\nFriday | 周五\nSaturday | 周六\nSunday | 周日`
+      },
+      {
+        id: 'en-months',
+        name: '英语：月份 (Jan - Dec)',
+        lang: 'en-US',
+        pairs: `January | 1月\nFebruary | 2月\nMarch | 3月\nApril | 4月\nMay | 5月\nJune | 6月\nJuly | 7月\nAugust | 8月\nSeptember | 9月\nOctober | 10月\nNovember | 11月\nDecember | 12月`
+      },
+      {
+        id: 'ja-numbers',
+        name: '日语：基础数字 (1-10)',
+        lang: 'ja-JP',
+        pairs: `いち | 1\nに | 2\nさん | 3\nよん | 4\nご | 5\nろく | 6\nなな | 7\nはち | 8\nきゅう | 9\nじゅう | 10`
+      },
+      {
+        id: 'es-food',
+        name: '西班牙语：常见食物',
+        lang: 'es-ES',
+        pairs: `el pan | 面包\nla leche | 牛奶\nel agua | 水\nla manzana | 苹果\nel queso | 奶酪\nel pollo | 鸡肉\nel arroz | 米饭\nel huevo | 鸡蛋`
+      }
+    ];
+
+    const STORAGE_KEY = 'paul_nation_fluency_datasets_v1';
+
+    // 状态管理
+    let datasets = [];
+    let currentDatasetId = '';
+    let parsedItems = []; // [{ index, audioText, displayText }]
+    let voices = [];
+
+    // 训练运行状态
+    let trainingState = 'idle'; // 'idle' | 'playing' | 'paused'
+    let playQueue = []; // 存放 parsedItems 的索引序列
+    let currentQueuePos = -1;
+    let pauseTimer = null;
+    let revealTimer = null;
+    let currentUtterance = null;
+
+    // 自测计分
+    let stats = { total: 0, correct: 0, answeredCurrent: false };
+
+    // DOM 引用
+    const elDatasetSelect = document.getElementById('datasetSelect');
+    const elDatasetName = document.getElementById('datasetName');
+    const elVoiceSelect = document.getElementById('voiceSelect');
+    const elDataPairs = document.getElementById('dataPairs');
+    const elPauseInterval = document.getElementById('pauseInterval');
+    const elPauseIntervalVal = document.getElementById('pauseIntervalVal');
+    const elSpeechRate = document.getElementById('speechRate');
+    const elSpeechRateVal = document.getElementById('speechRateVal');
+    const elRepeatCount = document.getElementById('repeatCount');
+
+    const elBtnNewSet = document.getElementById('btnNewSet');
+    const elBtnSaveSet = document.getElementById('btnSaveSet');
+    const elBtnDeleteSet = document.getElementById('btnDeleteSet');
+
+    const elBtnStart = document.getElementById('btnStart');
+    const elBtnPause = document.getElementById('btnPause');
+    const elBtnReplayWord = document.getElementById('btnReplayWord');
+    const elBtnStop = document.getElementById('btnStop');
+
+    const elStatusBadge = document.getElementById('statusBadge');
+    const elProgressText = document.getElementById('progressText');
+    const elProgressBar = document.getElementById('progressBar');
+    const elScoreDisplay = document.getElementById('scoreDisplay');
+    const elBoardGrid = document.getElementById('boardGrid');
+
+    const elChkRevealAfter = document.getElementById('chkRevealAfter');
+    const elChkShowSub = document.getElementById('chkShowSub');
+    const elChkShuffleBoard = document.getElementById('chkShuffleBoard');
+
+    // 初始化
+    function init() {
+      loadDatasetsFromStorage();
+      initVoices();
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = initVoices;
+      }
+      bindEvents();
+      selectDataset(datasets[0].id);
+    }
+
+    function loadDatasetsFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            datasets = parsed;
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('读取本地存储失败:', e);
+      }
+      datasets = JSON.parse(JSON.stringify(DEFAULT_DATASETS));
+      saveDatasetsToStorage();
+    }
+
+    function saveDatasetsToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(datasets));
+      renderDatasetSelect();
+    }
+
+    function renderDatasetSelect() {
+      elDatasetSelect.innerHTML = '';
+      datasets.forEach(ds => {
+        const opt = document.createElement('option');
+        opt.value = ds.id;
+        opt.textContent = ds.name;
+        if (ds.id === currentDatasetId) opt.selected = true;
+        elDatasetSelect.appendChild(opt);
+      });
+    }
+
+    function initVoices() {
+      voices = speechSynthesis.getVoices();
+      const currentSelectedLang = elVoiceSelect.value;
+      elVoiceSelect.innerHTML = '';
+
+      if (voices.length === 0) {
+        const fallbackLangs = ['en-US', 'en-GB', 'ja-JP', 'es-ES', 'fr-FR', 'de-DE', 'zh-CN', 'ko-KR', 'ru-RU'];
+        fallbackLangs.forEach(lang => {
+          const opt = document.createElement('option');
+          opt.value = lang;
+          opt.textContent = `通用语言代码 (${lang})`;
+          elVoiceSelect.appendChild(opt);
+        });
+        return;
+      }
+
+      voices.forEach((v, idx) => {
+        const opt = document.createElement('option');
+        opt.value = `${v.lang}|||${v.name}`;
+        opt.textContent = `${v.lang} - ${v.name} ${v.default ? '(默认)' : ''}`;
+        elVoiceSelect.appendChild(opt);
+      });
+
+      const currentDs = datasets.find(d => d.id === currentDatasetId);
+      if (currentDs) {
+        matchVoiceSelect(currentDs.lang);
+      } else if (currentSelectedLang) {
+        elVoiceSelect.value = currentSelectedLang;
+      }
+    }
+
+    function matchVoiceSelect(langCode) {
+      if (!langCode) return;
+      const options = Array.from(elVoiceSelect.options);
+      const exact = options.find(o => o.value === langCode || o.value.startsWith(langCode + '|||'));
+      if (exact) {
+        elVoiceSelect.value = exact.value;
+        return;
+      }
+      const prefix = langCode.split('-')[0];
+      const fuzzy = options.find(o => o.value.toLowerCase().startsWith(prefix.toLowerCase()));
+      if (fuzzy) {
+        elVoiceSelect.value = fuzzy.value;
+      }
+    }
+
+    function selectDataset(id) {
+      stopTraining();
+      const ds = datasets.find(d => d.id === id) || datasets[0];
+      currentDatasetId = ds.id;
+      elDatasetName.value = ds.name;
+      elDataPairs.value = ds.pairs;
+      renderDatasetSelect();
+      matchVoiceSelect(ds.lang);
+      parseAndRenderBoard();
+    }
+
+    function parseAndRenderBoard() {
+      const lines = elDataPairs.value.split('\n').map(l => l.trim()).filter(Boolean);
+      parsedItems = lines.map((line, idx) => {
+        const parts = line.split('|').map(s => s.trim());
+        return {
+          index: idx,
+          audioText: parts[0],
+          displayText: parts[1] !== undefined && parts[1] !== '' ? parts[1] : parts[0]
+        };
+      });
+      renderBoard();
+    }
+
+    function renderBoard() {
+      elBoardGrid.innerHTML = '';
+      if (elChkShowSub.checked) {
+        elBoardGrid.classList.add('show-sub');
+      } else {
+        elBoardGrid.classList.remove('show-sub');
+      }
+
+      let displayList = [...parsedItems];
+      if (elChkShuffleBoard.checked) {
+        displayList.sort(() => Math.random() - 0.5);
+      }
+
+      displayList.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.index = item.index;
+        card.innerHTML = `
+          <div class="card-display">${escapeHtml(item.displayText)}</div>
+          <div class="card-sub">${escapeHtml(item.audioText)}</div>
+        `;
+        card.addEventListener('click', () => handleCardClick(item.index, card));
+        elBoardGrid.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    // 生成非连续重复的随机播放序列
+    function buildPlayQueue() {
+      const repeats = Math.max(1, parseInt(elRepeatCount.value, 10) || 4);
+      const count = parsedItems.length;
+      if (count === 0) return [];
+
+      let pool = [];
+      for (let r = 0; r < repeats; r++) {
+        for (let i = 0; i < count; i++) {
+          pool.push(i);
+        }
+      }
+
+      // Fisher-Yates 洗牌
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+
+      // 消除相邻重复项（确保不会连续两次读同一个词）
+      if (count > 1) {
+        for (let i = 1; i < pool.length; i++) {
+          if (pool[i] === pool[i - 1]) {
+            for (let j = i + 1; j < pool.length; j++) {
+              if (pool[j] !== pool[i - 1]) {
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+                break;
+              }
+            }
+          }
+        }
+      }
+      return pool;
+    }
+
+    function speakText(text, onEndCallback) {
+      speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      const voiceVal = elVoiceSelect.value;
+      if (voiceVal.includes('|||')) {
+        const [lang, name] = voiceVal.split('|||');
+        utter.lang = lang;
+        const matched = voices.find(v => v.name === name && v.lang === lang);
+        if (matched) utter.voice = matched;
+      } else {
+        utter.lang = voiceVal || 'en-US';
+      }
+
+      utter.rate = parseFloat(elSpeechRate.value) || 1.0;
+
+      utter.onend = () => {
+        if (onEndCallback) onEndCallback();
+      };
+      utter.onerror = (e) => {
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          if (onEndCallback) onEndCallback();
+        }
+      };
+
+      currentUtterance = utter;
+      speechSynthesis.speak(utter);
+    }
+
+    function startTraining() {
+      parseAndRenderBoard();
+      if (parsedItems.length === 0) {
+        alert('请先在左侧输入有效的数据对。');
+        return;
+      }
+
+      playQueue = buildPlayQueue();
+      currentQueuePos = 0;
+      stats = { total: 0, correct: 0, answeredCurrent: false };
+      updateScoreDisplay();
+
+      trainingState = 'playing';
+      updateControlsUI();
+      playCurrentStep();
+    }
+
+    function playCurrentStep() {
+      clearTimers();
+      clearCardFlashes();
+
+      if (trainingState !== 'playing') return;
+
+      if (currentQueuePos >= playQueue.length) {
+        finishTraining();
+        return;
+      }
+
+      updateProgressUI();
+      stats.answeredCurrent = false;
+
+      const itemIdx = playQueue[currentQueuePos];
+      const item = parsedItems[itemIdx];
+
+      speakText(item.audioText, () => {
+        if (trainingState !== 'playing') return;
+
+        const pauseMs = (parseFloat(elPauseInterval.value) || 1.5) * 1000;
+
+        // 如果勾选了停顿结束前闪烁提示答案
+        if (elChkRevealAfter.checked) {
+          const revealDelay = Math.max(50, pauseMs - 350);
+          revealTimer = setTimeout(() => {
+            if (trainingState === 'playing') {
+              flashCardByIndex(itemIdx, 'reveal-flash', 300);
+            }
+          }, revealDelay);
+        }
+
+        // 等待设定的停顿时间后，播报下一个词
+        pauseTimer = setTimeout(() => {
+          if (trainingState !== 'playing') return;
+          currentQueuePos++;
+          playCurrentStep();
+        }, pauseMs);
+      });
+    }
+
+    function togglePause() {
+      if (trainingState === 'playing') {
+        trainingState = 'paused';
+        clearTimers();
+        speechSynthesis.cancel();
+        updateControlsUI();
+      } else if (trainingState === 'paused') {
+        trainingState = 'playing';
+        updateControlsUI();
+        // 恢复时重新播报被打断的当前词
+        playCurrentStep();
+      }
+    }
+
+    function stopTraining() {
+      trainingState = 'idle';
+      clearTimers();
+      speechSynthesis.cancel();
+      clearCardFlashes();
+      currentQueuePos = -1;
+      updateControlsUI();
+      updateProgressUI();
+    }
+
+    function finishTraining() {
+      trainingState = 'idle';
+      clearTimers();
+      updateControlsUI();
+      elStatusBadge.textContent = '已完成';
+      elStatusBadge.className = 'badge active';
+      elProgressText.textContent = `${playQueue.length} / ${playQueue.length}`;
+      elProgressBar.style.width = '100%';
+    }
+
+    function clearTimers() {
+      if (pauseTimer) { clearTimeout(pauseTimer); pauseTimer = null; }
+      if (revealTimer) { clearTimeout(revealTimer); revealTimer = null; }
+    }
+
+    function clearCardFlashes() {
+      const cards = elBoardGrid.querySelectorAll('.card');
+      cards.forEach(c => c.classList.remove('correct-flash', 'wrong-flash', 'reveal-flash'));
+    }
+
+    function flashCardByIndex(itemIdx, className, duration = 350) {
+      const card = elBoardGrid.querySelector(`.card[data-index="${itemIdx}"]`);
+      if (!card) return;
+      card.classList.add(className);
+      setTimeout(() => card.classList.remove(className), duration);
+    }
+
+    function handleCardClick(clickedIndex, cardEl) {
+      const mode = document.querySelector('input[name="interactionMode"]:checked').value;
+
+      // 未开始训练或处于指认模式：点击卡片直接单独发音，方便预习
+      if (trainingState === 'idle') {
+        const item = parsedItems[clickedIndex];
+        if (item) {
+          flashCardByIndex(clickedIndex, 'reveal-flash', 300);
+          speakText(item.audioText);
+        }
+        return;
+      }
+
+      if (trainingState !== 'playing') return;
+
+      const targetIndex = playQueue[currentQueuePos];
+
+      if (mode === 'point') {
+        // 指认模式下点击给轻量视觉反馈
+        flashCardByIndex(clickedIndex, 'reveal-flash', 250);
+      } else if (mode === 'quiz') {
+        if (stats.answeredCurrent) return;
+        stats.answeredCurrent = true;
+        stats.total++;
+
+        if (clickedIndex === targetIndex) {
+          stats.correct++;
+          cardEl.classList.add('correct-flash');
+        } else {
+          cardEl.classList.add('wrong-flash');
+          flashCardByIndex(targetIndex, 'reveal-flash', 500);
+        }
+        updateScoreDisplay();
+      }
+    }
+
+    function updateScoreDisplay() {
+      const mode = document.querySelector('input[name="interactionMode"]:checked').value;
+      if (mode !== 'quiz' || stats.total === 0) {
+        elScoreDisplay.textContent = '';
+        return;
+      }
+      const acc = Math.round((stats.correct / stats.total) * 100);
+      elScoreDisplay.textContent = `自测正确率: ${stats.correct} / ${stats.total} (${acc}%)`;
+    }
+
+    function updateControlsUI() {
+      if (trainingState === 'idle') {
+        elBtnStart.disabled = false;
+        elBtnStart.textContent = '▶ 开始训练';
+        elBtnPause.disabled = true;
+        elBtnPause.textContent = '⏸ 暂停 (Space)';
+        elBtnReplayWord.disabled = true;
+        elBtnStop.disabled = true;
+        elStatusBadge.textContent = '就绪';
+        elStatusBadge.className = 'badge';
+      } else if (trainingState === 'playing') {
+        elBtnStart.disabled = true;
+        elBtnPause.disabled = false;
+        elBtnPause.textContent = '⏸ 暂停 (Space)';
+        elBtnReplayWord.disabled = false;
+        elBtnStop.disabled = false;
+        elStatusBadge.textContent = '播报中';
+        elStatusBadge.className = 'badge active';
+      } else if (trainingState === 'paused') {
+        elBtnStart.disabled = true;
+        elBtnPause.disabled = false;
+        elBtnPause.textContent = '▶ 继续 (Space)';
+        elBtnReplayWord.disabled = false;
+        elBtnStop.disabled = false;
+        elStatusBadge.textContent = '已暂停';
+        elStatusBadge.className = 'badge paused';
+      }
+    }
+
+    function updateProgressUI() {
+      if (currentQueuePos < 0 || playQueue.length === 0) {
+        elProgressText.textContent = '0 / 0';
+        elProgressBar.style.width = '0%';
+        return;
+      }
+      const current = Math.min(currentQueuePos + 1, playQueue.length);
+      elProgressText.textContent = `${current} / ${playQueue.length}`;
+      const pct = Math.round((current / playQueue.length) * 100);
+      elProgressBar.style.width = `${pct}%`;
+    }
+
+    function bindEvents() {
+      elDatasetSelect.addEventListener('change', (e) => {
+        selectDataset(e.target.value);
+      });
+
+      elDataPairs.addEventListener('input', () => {
+        if (trainingState === 'idle') {
+          parseAndRenderBoard();
+        }
+      });
+
+      elPauseInterval.addEventListener('input', (e) => {
+        elPauseIntervalVal.textContent = `${parseFloat(e.target.value).toFixed(1)} 秒`;
+      });
+
+      elSpeechRate.addEventListener('input', (e) => {
+        elSpeechRateVal.textContent = `${parseFloat(e.target.value).toFixed(2)}x`;
+      });
+
+      elChkShowSub.addEventListener('change', renderBoard);
+      elChkShuffleBoard.addEventListener('change', renderBoard);
+
+      document.querySelectorAll('input[name="interactionMode"]').forEach(radio => {
+        radio.addEventListener('change', updateScoreDisplay);
+      });
+
+      elBtnNewSet.addEventListener('click', () => {
+        stopTraining();
+        const newId = 'custom_' + Date.now();
+        const newDs = {
+          id: newId,
+          name: '新建数据集',
+          lang: elVoiceSelect.value.split('|||')[0] || 'en-US',
+          pairs: 'apple | 苹果\nbanana | 香蕉\norange | 橙子\ngrape | 葡萄'
+        };
+        datasets.push(newDs);
+        saveDatasetsToStorage();
+        selectDataset(newId);
+      });
+
+      elBtnSaveSet.addEventListener('click', () => {
+        const ds = datasets.find(d => d.id === currentDatasetId);
+        if (!ds) return;
+        ds.name = elDatasetName.value.trim() || '未命名数据集';
+        ds.lang = elVoiceSelect.value;
+        ds.pairs = elDataPairs.value;
+        saveDatasetsToStorage();
+        parseAndRenderBoard();
+      });
+
+      elBtnDeleteSet.addEventListener('click', () => {
+        if (datasets.length <= 1) {
+          alert('至少需要保留一个数据集。');
+          return;
+        }
+        datasets = datasets.filter(d => d.id !== currentDatasetId);
+        saveDatasetsToStorage();
+        selectDataset(datasets[0].id);
+      });
+
+      elBtnStart.addEventListener('click', startTraining);
+      elBtnPause.addEventListener('click', togglePause);
+      elBtnStop.addEventListener('click', stopTraining);
+
+      elBtnReplayWord.addEventListener('click', () => {
+        if (currentQueuePos >= 0 && currentQueuePos < playQueue.length) {
+          const item = parsedItems[playQueue[currentQueuePos]];
+          if (item) speakText(item.audioText);
+        }
+      });
+
+      // 支持空格键快速暂停/继续（焦点不在输入框时生效）
+      window.addEventListener('keydown', (e) => {
+        const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        if (e.code === 'Space' && (trainingState === 'playing' || trainingState === 'paused')) {
+          e.preventDefault();
+          togglePause();
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
