@@ -18,3 +18,8 @@ Paul Nation的《学语言你需要知道什么》（详情见[此](https://gith
 ## 快速一览
 
 ![页面图片](./example.png)
+
+## 效果演示
+
+https://github.com/user-attachments/assets/0f90062f-9140-49dd-9a3c-6a712f063a8e
+
