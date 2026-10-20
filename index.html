@@ -36,12 +36,49 @@
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
       flex-wrap: wrap;
       gap: 12px;
     }
     header h1 { font-size: 1.5rem; font-weight: 600; }
     header p { color: var(--text-secondary); font-size: 0.9rem; }
+
+    .lang-switcher {
+      display: inline-flex;
+      align-items: center;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+    .lang-icon {
+      font-size: 0.9rem;
+      padding: 0 6px;
+      color: var(--text-secondary);
+      user-select: none;
+    }
+    .lang-btn {
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .lang-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--text);
+    }
+    .lang-btn.active {
+      background: var(--surface);
+      color: var(--primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
 
     .layout {
       display: grid;
@@ -260,14 +297,42 @@
       width: 0%;
       transition: width 0.2s ease;
     }
+
+    /* 轻量提示条 */
+    .toast-notice {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 1000;
+    }
+    .toast-notice.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div>
-      <h1>Activity 6.1: 重复听流利度训练 (Repeated Listening)</h1>
-      <p>基于 Paul Nation 语言学习四主线（Four Strands）—— 听力解码速度与反应训练</p>
+      <h1 data-i18n="headerTitle">Activity 6.1: 重复听流利度训练 (Repeated Listening)</h1>
+      <p data-i18n="headerSubtitle">基于 Paul Nation 语言学习四主线（Four Strands）—— 听力解码速度与反应训练</p>
+    </div>
+    <div class="lang-switcher" role="group" aria-label="Language Switcher">
+      <span class="lang-icon" aria-hidden="true">🌐</span>
+      <button type="button" class="lang-btn active" data-lang="zh-CN">中文</button>
+      <button type="button" class="lang-btn" data-lang="en">English</button>
+      <button type="button" class="lang-btn" data-lang="ja">日本語</button>
     </div>
   </header>
 
@@ -275,52 +340,52 @@
     <!-- 左侧配置与数据集管理 -->
     <aside class="panel">
       <div class="panel-title">
-        <span>1. 数据集配置</span>
-        <button id="btnNewSet" type="button" style="padding: 4px 8px; font-size: 0.8rem;">+ 新建</button>
+        <span data-i18n="section1Title">1. 数据集配置</span>
+        <button id="btnNewSet" type="button" style="padding: 4px 8px; font-size: 0.8rem;" data-i18n="btnNewSet">+ 新建</button>
       </div>
 
       <div class="form-group">
-        <label for="datasetSelect">选择预设 / 已保存数据集</label>
+        <label for="datasetSelect" data-i18n="labelDatasetSelect">选择预设 / 已保存数据集</label>
         <select id="datasetSelect"></select>
       </div>
 
       <div class="form-group">
-        <label for="datasetName">数据集名称</label>
-        <input type="text" id="datasetName" placeholder="例如：法语数字 1-10">
+        <label for="datasetName" data-i18n="labelDatasetName">数据集名称</label>
+        <input type="text" id="datasetName" placeholder="例如：法语数字 1-10" data-i18n-placeholder="placeholderDatasetName">
       </div>
 
       <div class="form-group">
-        <label for="voiceSelect">播报语言 / 语音引擎 (TTS)</label>
+        <label for="voiceSelect" data-i18n="labelVoiceSelect">播报语言 / 语音引擎 (TTS)</label>
         <select id="voiceSelect"></select>
-        <div class="hint">使用浏览器内置语音合成，支持断网使用。</div>
+        <div class="hint" data-i18n="hintVoiceSelect">使用浏览器内置语音合成，支持断网使用。</div>
       </div>
 
       <div class="form-group">
-        <label for="dataPairs">数据对列表（每行一对，格式：<code>播报音频词 | 屏幕显示字符</code>）</label>
+        <label for="dataPairs" data-i18n-html="labelDataPairs">数据对列表（每行一对，格式：<code>播报音频词 | 屏幕显示字符</code>）</label>
         <textarea id="dataPairs" placeholder="six | 6&#10;three | 3"></textarea>
-        <div class="hint">若整行只有一个词，则播报与屏幕显示相同。</div>
+        <div class="hint" data-i18n="hintDataPairs">若整行只有一个词，则播报与屏幕显示相同。</div>
       </div>
 
       <div class="btn-row" style="margin-bottom: 24px;">
-        <button id="btnSaveSet" class="btn-primary" type="button">保存 / 更新数据集</button>
-        <button id="btnDeleteSet" type="button">删除当前集</button>
+        <button id="btnSaveSet" class="btn-primary" type="button" data-i18n="btnSaveSet">保存 / 更新数据集</button>
+        <button id="btnDeleteSet" type="button" data-i18n="btnDeleteSet">删除当前集</button>
       </div>
 
       <div class="panel-title">
-        <span>2. 训练与速度参数</span>
+        <span data-i18n="section2Title">2. 训练与速度参数</span>
       </div>
 
       <div class="form-group">
-        <label>词间停顿时间 (说出 A 后等待多久说 B)</label>
+        <label data-i18n="labelPauseInterval">词间停顿时间 (说出 A 后等待多久说 B)</label>
         <div class="range-row">
           <input type="range" id="pauseInterval" min="0.2" max="5.0" step="0.1" value="1.8">
           <span class="range-val" id="pauseIntervalVal">1.8 秒</span>
         </div>
-        <div class="hint">核心训练指标：熟练后请逐步缩短停顿间隔，压缩大脑反应时间。</div>
+        <div class="hint" data-i18n="hintPauseInterval">核心训练指标：熟练后请逐步缩短停顿间隔，压缩大脑反应时间。</div>
       </div>
 
       <div class="form-group">
-        <label>单字发音语速 (TTS 语速微调)</label>
+        <label data-i18n="labelSpeechRate">单字发音语速 (TTS 语速微调)</label>
         <div class="range-row">
           <input type="range" id="speechRate" min="0.6" max="1.6" step="0.05" value="1.0">
           <span class="range-val" id="speechRateVal">1.0x</span>
@@ -328,7 +393,7 @@
       </div>
 
       <div class="form-group">
-        <label for="repeatCount">每个词条在单轮训练中重复出现次数</label>
+        <label for="repeatCount" data-i18n="labelRepeatCount">每个词条在单轮训练中重复出现次数</label>
         <input type="number" id="repeatCount" min="1" max="20" value="4">
       </div>
     </aside>
@@ -336,7 +401,7 @@
     <!-- 右侧训练面板 -->
     <main class="panel">
       <div class="panel-title">
-        <span>训练看板 (Pointing & Recognition Board)</span>
+        <span data-i18n="boardTitle">训练看板 (Pointing & Recognition Board)</span>
         <span id="scoreDisplay" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: normal;"></span>
       </div>
 
@@ -344,13 +409,13 @@
         <div class="btn-row">
           <button id="btnStart" class="btn-primary" type="button">▶ 开始训练</button>
           <button id="btnPause" class="btn-warning" type="button" disabled>⏸ 暂停 (Space)</button>
-          <button id="btnReplayWord" type="button" disabled>↺ 重播当前词</button>
-          <button id="btnStop" class="btn-danger" type="button" disabled>■ 结束</button>
+          <button id="btnReplayWord" type="button" disabled data-i18n="btnReplayWord">↺ 重播当前词</button>
+          <button id="btnStop" class="btn-danger" type="button" disabled data-i18n="btnStop">■ 结束</button>
         </div>
 
         <div class="status-box">
           <span id="statusBadge" class="badge">就绪</span>
-          <span>进度: <strong id="progressText">0 / 0</strong></span>
+          <span><span data-i18n="labelProgress">进度:</span> <strong id="progressText">0 / 0</strong></span>
         </div>
       </div>
 
@@ -361,26 +426,26 @@
       <div class="options-bar">
         <label>
           <input type="radio" name="interactionMode" value="point" checked>
-          <span><strong>指认模式（原书推荐）</strong>：听录音同时用手指/鼠标指向对应卡片（点击任意卡片可单独试听）</span>
+          <span data-i18n-html="modePointDesc"><strong>指认模式（原书推荐）</strong>：听录音同时用手指/鼠标指向对应卡片（点击任意卡片可单独试听）</span>
         </label>
         <label>
           <input type="radio" name="interactionMode" value="quiz">
-          <span><strong>点击自测模式</strong>：听到语音后，在停顿期内点击对应卡片验证对错</span>
+          <span data-i18n-html="modeQuizDesc"><strong>点击自测模式</strong>：听到语音后，在停顿期内点击对应卡片验证对错</span>
         </label>
       </div>
 
       <div class="options-bar">
         <label>
           <input type="checkbox" id="chkRevealAfter">
-          <span>在每次停顿结束前闪烁提示刚才播报的卡片（适合初期核对）</span>
+          <span data-i18n="optRevealAfter">在每次停顿结束前闪烁提示刚才播报的卡片（适合初期核对）</span>
         </label>
         <label>
           <input type="checkbox" id="chkShowSub">
-          <span>在卡片下方直接显示外语原文（降低难度）</span>
+          <span data-i18n="optShowSub">在卡片下方直接显示外语原文（降低难度）</span>
         </label>
         <label>
           <input type="checkbox" id="chkShuffleBoard">
-          <span>打乱看板排列顺序</span>
+          <span data-i18n="optShuffleBoard">打乱看板排列顺序</span>
         </label>
       </div>
 
@@ -388,7 +453,218 @@
     </main>
   </div>
 
+  <div id="toastNotice" class="toast-notice" role="status" aria-live="polite"></div>
+
   <script>
+    // 多语言字典 (中文 / 英语 / 日语)
+    const I18N = {
+      'zh-CN': {
+        pageTitle: 'Activity 6.1: 重复听流利度训练器 (Repeated Listening Trainer)',
+        headerTitle: 'Activity 6.1: 重复听流利度训练 (Repeated Listening)',
+        headerSubtitle: '基于 Paul Nation 语言学习四主线（Four Strands）—— 听力解码速度与反应训练',
+        section1Title: '1. 数据集配置',
+        btnNewSet: '+ 新建',
+        labelDatasetSelect: '选择预设 / 已保存数据集',
+        labelDatasetName: '数据集名称',
+        placeholderDatasetName: '例如：法语数字 1-10',
+        labelVoiceSelect: '播报语言 / 语音引擎 (TTS)',
+        hintVoiceSelect: '使用浏览器内置语音合成，支持断网使用。',
+        labelDataPairs: '数据对列表（每行一对，格式：<code>播报音频词 | 屏幕显示字符</code>）',
+        hintDataPairs: '若整行只有一个词，则播报与屏幕显示相同。',
+        btnSaveSet: '保存 / 更新数据集',
+        btnDeleteSet: '删除当前集',
+        section2Title: '2. 训练与速度参数',
+        labelPauseInterval: '词间停顿时间 (说出 A 后等待多久说 B)',
+        unitSecond: '秒',
+        hintPauseInterval: '核心训练指标：熟练后请逐步缩短停顿间隔，压缩大脑反应时间。',
+        labelSpeechRate: '单字发音语速 (TTS 语速微调)',
+        labelRepeatCount: '每个词条在单轮训练中重复出现次数',
+        boardTitle: '训练看板 (Pointing & Recognition Board)',
+        btnStart: '▶ 开始训练',
+        btnPause: '⏸ 暂停 (Space)',
+        btnResume: '▶ 继续 (Space)',
+        btnReplayWord: '↺ 重播当前词',
+        btnStop: '■ 结束',
+        statusReady: '就绪',
+        statusPlaying: '播报中',
+        statusPaused: '已暂停',
+        statusDone: '已完成',
+        labelProgress: '进度:',
+        modePointDesc: '<strong>指认模式（原书推荐）</strong>：听录音同时用手指/鼠标指向对应卡片（点击任意卡片可单独试听）',
+        modeQuizDesc: '<strong>点击自测模式</strong>：听到语音后，在停顿期内点击对应卡片验证对错',
+        optRevealAfter: '在每次停顿结束前闪烁提示刚才播报的卡片（适合初期核对）',
+        optShowSub: '在卡片下方直接显示外语原文（降低难度）',
+        optShuffleBoard: '打乱看板排列顺序',
+        scoreTemplate: '自测正确率: {correct} / {total} ({acc}%)',
+        voiceFallback: '通用语言代码 ({lang})',
+        voiceDefault: '(默认)',
+        newDatasetName: '新建数据集',
+        newDatasetPairs: 'apple | 苹果\nbanana | 香蕉\norange | 橙子\ngrape | 葡萄',
+        unnamedDataset: '未命名数据集',
+        msgEmptyPairs: '请先在左侧输入有效的数据对。',
+        msgKeepOneSet: '至少需要保留一个数据集。',
+        msgSaved: '数据集已保存'
+      },
+      'en': {
+        pageTitle: 'Activity 6.1: Repeated Listening Fluency Trainer',
+        headerTitle: 'Activity 6.1: Repeated Listening Fluency Training',
+        headerSubtitle: 'Based on Paul Nation\'s Four Strands — Listening Decoding Speed & Response Training',
+        section1Title: '1. Dataset Configuration',
+        btnNewSet: '+ New',
+        labelDatasetSelect: 'Select Preset / Saved Dataset',
+        labelDatasetName: 'Dataset Name',
+        placeholderDatasetName: 'e.g., French Numbers 1-10',
+        labelVoiceSelect: 'Speech Language / Voice Engine (TTS)',
+        hintVoiceSelect: 'Uses built-in browser speech synthesis; works offline.',
+        labelDataPairs: 'Data Pairs (one per line, format: <code>Spoken Word | Display Text</code>)',
+        hintDataPairs: 'If a line has only one word, it is used for both speech and display.',
+        btnSaveSet: 'Save / Update Dataset',
+        btnDeleteSet: 'Delete Dataset',
+        section2Title: '2. Training & Speed Parameters',
+        labelPauseInterval: 'Inter-word Pause (Wait time between words)',
+        unitSecond: 's',
+        hintPauseInterval: 'Core metric: Gradually shorten the pause as you improve to compress response time.',
+        labelSpeechRate: 'Word Speech Rate (TTS Speed)',
+        labelRepeatCount: 'Repetitions per Item in a Single Session',
+        boardTitle: 'Training Board (Pointing & Recognition Board)',
+        btnStart: '▶ Start Training',
+        btnPause: '⏸ Pause (Space)',
+        btnResume: '▶ Resume (Space)',
+        btnReplayWord: '↺ Replay Word',
+        btnStop: '■ Stop',
+        statusReady: 'Ready',
+        statusPlaying: 'Playing',
+        statusPaused: 'Paused',
+        statusDone: 'Completed',
+        labelProgress: 'Progress:',
+        modePointDesc: '<strong>Pointing Mode (Recommended)</strong>: Listen and point to the matching card with your finger/mouse (click any card to preview audio)',
+        modeQuizDesc: '<strong>Quiz Mode</strong>: After hearing the word, click the matching card during the pause to check your answer',
+        optRevealAfter: 'Flash the spoken card right before each pause ends (helpful for early verification)',
+        optShowSub: 'Show target language text below each card (lowers difficulty)',
+        optShuffleBoard: 'Shuffle board card order',
+        scoreTemplate: 'Quiz Accuracy: {correct} / {total} ({acc}%)',
+        voiceFallback: 'Generic Language Code ({lang})',
+        voiceDefault: '(Default)',
+        newDatasetName: 'New Dataset',
+        newDatasetPairs: 'apple | Apple\nbanana | Banana\norange | Orange\ngrape | Grape',
+        unnamedDataset: 'Unnamed Dataset',
+        msgEmptyPairs: 'Please enter valid data pairs on the left first.',
+        msgKeepOneSet: 'At least one dataset must be kept.',
+        msgSaved: 'Dataset saved'
+      },
+      'ja': {
+        pageTitle: 'Activity 6.1: 反復リスニング流暢性トレーナー (Repeated Listening Trainer)',
+        headerTitle: 'Activity 6.1: 反復リスニング流暢性トレーニング (Repeated Listening)',
+        headerSubtitle: 'Paul Nation「4つのストランド（Four Strands）」に基づく —— リスニング解読速度と反応トレーニング',
+        section1Title: '1. データセット設定',
+        btnNewSet: '+ 新規作成',
+        labelDatasetSelect: 'プリセット / 保存済みデータセットを選択',
+        labelDatasetName: 'データセット名',
+        placeholderDatasetName: '例：フランス語の数字 1-10',
+        labelVoiceSelect: '読み上げ言語 / 音声エンジン (TTS)',
+        hintVoiceSelect: 'ブラウザ内蔵の音声合成を使用します（オフライン対応）。',
+        labelDataPairs: 'データペア一覧（1行に1ペア、形式：<code>読み上げ語 | 画面表示テキスト</code>）',
+        hintDataPairs: '1行に1語のみの場合、読み上げと画面表示の両方に使われます。',
+        btnSaveSet: '保存 / 更新',
+        btnDeleteSet: '現在のセットを削除',
+        section2Title: '2. トレーニング・速度設定',
+        labelPauseInterval: '単語間のポーズ時間（Aの後にBを読むまでの待機時間）',
+        unitSecond: '秒',
+        hintPauseInterval: '重要指標：慣れてきたらポーズ間隔を少しずつ短くし、脳の反応時間を短縮しましょう。',
+        labelSpeechRate: '単語の発話速度（TTS速度の微調整）',
+        labelRepeatCount: '1回のトレーニングでの各単語の反復回数',
+        boardTitle: 'トレーニングボード (Pointing & Recognition Board)',
+        btnStart: '▶ トレーニング開始',
+        btnPause: '⏸ 一時停止 (Space)',
+        btnResume: '▶ 再開 (Space)',
+        btnReplayWord: '↺ 現在の単語を再再生',
+        btnStop: '■ 終了',
+        statusReady: '準備完了',
+        statusPlaying: '再生中',
+        statusPaused: '一時停止中',
+        statusDone: '完了',
+        labelProgress: '進捗:',
+        modePointDesc: '<strong>指差しモード（原著推奨）</strong>：音声を聞きながら対応するカードを指やマウスで指す（カードをクリックすると個別試聴）',
+        modeQuizDesc: '<strong>クリックテストモード</strong>：音声を聞いた後、ポーズ時間内に対応するカードをクリックして正誤判定',
+        optRevealAfter: '各ポーズ終了直前に読み上げたカードを点滅表示（初期の確認に最適）',
+        optShowSub: 'カードの下に外国語の原文を表示（難易度を下げる）',
+        optShuffleBoard: 'ボードの並び順をシャッフル',
+        scoreTemplate: 'テスト正答率: {correct} / {total} ({acc}%)',
+        voiceFallback: '汎用言語コード ({lang})',
+        voiceDefault: '(デフォルト)',
+        newDatasetName: '新規データセット',
+        newDatasetPairs: 'apple | りんご\nbanana | バナナ\norange | オレンジ\ngrape | ぶどう',
+        unnamedDataset: '名称未設定データセット',
+        msgEmptyPairs: '先に左側の欄に有効なデータペアを入力してください。',
+        msgKeepOneSet: '少なくとも1つのデータセットを残す必要があります。',
+        msgSaved: 'データセットを保存しました'
+      }
+    };
+
+    // 预设数据集多语言映射
+    const PRESET_I18N = {
+      'en-numbers': {
+        name: {
+          'zh-CN': '英语：基础数字 (1-10)',
+          'en': 'English: Basic Numbers (1-10)',
+          'ja': '英語：基本の数字 (1-10)'
+        },
+        pairs: {
+          'zh-CN': `one | 1\ntwo | 2\nthree | 3\nfour | 4\nfive | 5\nsix | 6\nseven | 7\neight | 8\nnine | 9\nten | 10`,
+          'en': `one | 1\ntwo | 2\nthree | 3\nfour | 4\nfive | 5\nsix | 6\nseven | 7\neight | 8\nnine | 9\nten | 10`,
+          'ja': `one | 1\ntwo | 2\nthree | 3\nfour | 4\nfive | 5\nsix | 6\nseven | 7\neight | 8\nnine | 9\nten | 10`
+        }
+      },
+      'en-days': {
+        name: {
+          'zh-CN': '英语：星期 (Monday - Sunday)',
+          'en': 'English: Days of the Week (Mon - Sun)',
+          'ja': '英語：曜日 (Monday - Sunday)'
+        },
+        pairs: {
+          'zh-CN': `Monday | 周一\nTuesday | 周二\nWednesday | 周三\nThursday | 周四\nFriday | 周五\nSaturday | 周六\nSunday | 周日`,
+          'en': `Monday | Mon\nTuesday | Tue\nWednesday | Wed\nThursday | Thu\nFriday | Fri\nSaturday | Sat\nSunday | Sun`,
+          'ja': `Monday | 月曜日\nTuesday | 火曜日\nWednesday | 水曜日\nThursday | 木曜日\nFriday | 金曜日\nSaturday | 土曜日\nSunday | 日曜日`
+        }
+      },
+      'en-months': {
+        name: {
+          'zh-CN': '英语：月份 (Jan - Dec)',
+          'en': 'English: Months (Jan - Dec)',
+          'ja': '英語：月 (Jan - Dec)'
+        },
+        pairs: {
+          'zh-CN': `January | 1月\nFebruary | 2月\nMarch | 3月\nApril | 4月\nMay | 5月\nJune | 6月\nJuly | 7月\nAugust | 8月\nSeptember | 9月\nOctober | 10月\nNovember | 11月\nDecember | 12月`,
+          'en': `January | Jan (1)\nFebruary | Feb (2)\nMarch | Mar (3)\nApril | Apr (4)\nMay | May (5)\nJune | Jun (6)\nJuly | Jul (7)\nAugust | Aug (8)\nSeptember | Sep (9)\nOctober | Oct (10)\nNovember | Nov (11)\nDecember | Dec (12)`,
+          'ja': `January | 1月\nFebruary | 2月\nMarch | 3月\nApril | 4月\nMay | 5月\nJune | 6月\nJuly | 7月\nAugust | 8月\nSeptember | 9月\nOctober | 10月\nNovember | 11月\nDecember | 12月`
+        }
+      },
+      'ja-numbers': {
+        name: {
+          'zh-CN': '日语：基础数字 (1-10)',
+          'en': 'Japanese: Basic Numbers (1-10)',
+          'ja': '日本語：基本の数字 (1-10)'
+        },
+        pairs: {
+          'zh-CN': `いち | 1\nに | 2\nさん | 3\nよん | 4\nご | 5\nろく | 6\nなな | 7\nはち | 8\nきゅう | 9\nじゅう | 10`,
+          'en': `いち | 1\nに | 2\nさん | 3\nよん | 4\nご | 5\nろく | 6\nなな | 7\nはち | 8\nきゅう | 9\nじゅう | 10`,
+          'ja': `いち | 1\nに | 2\nさん | 3\nよん | 4\nご | 5\nろく | 6\nなな | 7\nはち | 8\nきゅう | 9\nじゅう | 10`
+        }
+      },
+      'es-food': {
+        name: {
+          'zh-CN': '西班牙语：常见食物',
+          'en': 'Spanish: Common Foods',
+          'ja': 'スペイン語：よくある食べ物'
+        },
+        pairs: {
+          'zh-CN': `el pan | 面包\nla leche | 牛奶\nel agua | 水\nla manzana | 苹果\nel queso | 奶酪\nel pollo | 鸡肉\nel arroz | 米饭\nel huevo | 鸡蛋`,
+          'en': `el pan | Bread\nla leche | Milk\nel agua | Water\nla manzana | Apple\nel queso | Cheese\nel pollo | Chicken\nel arroz | Rice\nel huevo | Egg`,
+          'ja': `el pan | パン\nla leche | 牛乳\nel agua | 水\nla manzana | りんご\nel queso | チーズ\nel pollo | 鶏肉\nel arroz | ご飯\nel huevo | 卵`
+        }
+      }
+    };
+
     // 预设数据集
     const DEFAULT_DATASETS = [
       {
@@ -424,8 +700,10 @@
     ];
 
     const STORAGE_KEY = 'paul_nation_fluency_datasets_v1';
+    const LANG_STORAGE_KEY = 'paul_nation_fluency_ui_lang_v1';
 
     // 状态管理
+    let currentLang = 'zh-CN';
     let datasets = [];
     let currentDatasetId = '';
     let parsedItems = []; // [{ index, audioText, displayText }]
@@ -433,11 +711,13 @@
 
     // 训练运行状态
     let trainingState = 'idle'; // 'idle' | 'playing' | 'paused'
+    let isCompletedStatus = false;
     let playQueue = []; // 存放 parsedItems 的索引序列
     let currentQueuePos = -1;
     let pauseTimer = null;
     let revealTimer = null;
     let currentUtterance = null;
+    let toastTimer = null;
 
     // 自测计分
     let stats = { total: 0, correct: 0, answeredCurrent: false };
@@ -471,16 +751,142 @@
     const elChkRevealAfter = document.getElementById('chkRevealAfter');
     const elChkShowSub = document.getElementById('chkShowSub');
     const elChkShuffleBoard = document.getElementById('chkShuffleBoard');
+    const elToastNotice = document.getElementById('toastNotice');
+
+    function t(key, params = {}) {
+      const dict = I18N[currentLang] || I18N['zh-CN'];
+      let str = dict[key] !== undefined ? dict[key] : (I18N['zh-CN'][key] || key);
+      Object.keys(params).forEach(k => {
+        str = str.replace(`{${k}}`, params[k]);
+      });
+      return str;
+    }
+
+    function showToast(msg) {
+      if (!elToastNotice) return;
+      elToastNotice.textContent = msg;
+      elToastNotice.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        elToastNotice.classList.remove('show');
+      }, 2600);
+    }
 
     // 初始化
     function init() {
+      loadLanguageFromStorage();
       loadDatasetsFromStorage();
+      localizeUnmodifiedDatasets(currentLang);
       initVoices();
       if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = initVoices;
       }
       bindEvents();
+      applyLanguageUI();
       selectDataset(datasets[0].id);
+    }
+
+    function loadLanguageFromStorage() {
+      try {
+        const saved = localStorage.getItem(LANG_STORAGE_KEY);
+        if (saved && I18N[saved]) {
+          currentLang = saved;
+        }
+      } catch (e) {
+        console.error('读取语言设置失败:', e);
+      }
+    }
+
+    function setLanguage(lang) {
+      if (!I18N[lang]) return;
+      currentLang = lang;
+      try {
+        localStorage.setItem(LANG_STORAGE_KEY, lang);
+      } catch (e) {
+        console.error('保存语言设置失败:', e);
+      }
+      localizeUnmodifiedDatasets(lang);
+      applyLanguageUI();
+    }
+
+    function localizeUnmodifiedDatasets(targetLang) {
+      let changed = false;
+      const defaultNewNames = Object.values(I18N).map(d => d.newDatasetName);
+      const defaultNewPairs = Object.values(I18N).map(d => d.newDatasetPairs);
+
+      datasets.forEach(ds => {
+        const preset = PRESET_I18N[ds.id];
+        if (preset) {
+          const knownNames = Object.values(preset.name);
+          if (knownNames.includes(ds.name)) {
+            ds.name = preset.name[targetLang];
+            changed = true;
+          }
+          const knownPairs = Object.values(preset.pairs);
+          if (knownPairs.includes(ds.pairs)) {
+            ds.pairs = preset.pairs[targetLang];
+            changed = true;
+          }
+        } else {
+          if (defaultNewNames.includes(ds.name)) {
+            ds.name = I18N[targetLang].newDatasetName;
+            changed = true;
+          }
+          if (defaultNewPairs.includes(ds.pairs)) {
+            ds.pairs = I18N[targetLang].newDatasetPairs;
+            changed = true;
+          }
+        }
+      });
+
+      if (changed) {
+        saveDatasetsToStorage();
+      }
+    }
+
+    function applyLanguageUI() {
+      document.documentElement.lang = currentLang;
+      document.title = t('pageTitle');
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === currentLang);
+      });
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t(key);
+      });
+
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        el.innerHTML = t(key);
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.setAttribute('placeholder', t(key));
+      });
+
+      updatePauseIntervalLabel();
+      initVoices();
+      renderDatasetSelect();
+
+      const activeDs = datasets.find(d => d.id === currentDatasetId);
+      if (activeDs) {
+        elDatasetName.value = activeDs.name;
+        if (trainingState === 'idle') {
+          elDataPairs.value = activeDs.pairs;
+          parseAndRenderBoard();
+        }
+      }
+
+      updateControlsUI();
+      updateScoreDisplay();
+    }
+
+    function updatePauseIntervalLabel() {
+      const val = parseFloat(elPauseInterval.value).toFixed(1);
+      elPauseIntervalVal.textContent = `${val} ${t('unitSecond')}`;
     }
 
     function loadDatasetsFromStorage() {
@@ -501,7 +907,11 @@
     }
 
     function saveDatasetsToStorage() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(datasets));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(datasets));
+      } catch (e) {
+        console.error('写入本地存储失败:', e);
+      }
       renderDatasetSelect();
     }
 
@@ -526,24 +936,27 @@
         fallbackLangs.forEach(lang => {
           const opt = document.createElement('option');
           opt.value = lang;
-          opt.textContent = `通用语言代码 (${lang})`;
+          opt.textContent = t('voiceFallback', { lang });
           elVoiceSelect.appendChild(opt);
         });
+        if (currentSelectedLang) {
+          matchVoiceSelect(currentSelectedLang);
+        }
         return;
       }
 
-      voices.forEach((v, idx) => {
+      voices.forEach((v) => {
         const opt = document.createElement('option');
         opt.value = `${v.lang}|||${v.name}`;
-        opt.textContent = `${v.lang} - ${v.name} ${v.default ? '(默认)' : ''}`;
+        opt.textContent = `${v.lang} - ${v.name} ${v.default ? t('voiceDefault') : ''}`;
         elVoiceSelect.appendChild(opt);
       });
 
       const currentDs = datasets.find(d => d.id === currentDatasetId);
-      if (currentDs) {
+      if (currentSelectedLang) {
+        matchVoiceSelect(currentSelectedLang);
+      } else if (currentDs) {
         matchVoiceSelect(currentDs.lang);
-      } else if (currentSelectedLang) {
-        elVoiceSelect.value = currentSelectedLang;
       }
     }
 
@@ -555,7 +968,7 @@
         elVoiceSelect.value = exact.value;
         return;
       }
-      const prefix = langCode.split('-')[0];
+      const prefix = langCode.split('|||')[0].split('-')[0];
       const fuzzy = options.find(o => o.value.toLowerCase().startsWith(prefix.toLowerCase()));
       if (fuzzy) {
         elVoiceSelect.value = fuzzy.value;
@@ -684,13 +1097,14 @@
     function startTraining() {
       parseAndRenderBoard();
       if (parsedItems.length === 0) {
-        alert('请先在左侧输入有效的数据对。');
+        showToast(t('msgEmptyPairs'));
         return;
       }
 
       playQueue = buildPlayQueue();
       currentQueuePos = 0;
       stats = { total: 0, correct: 0, answeredCurrent: false };
+      isCompletedStatus = false;
       updateScoreDisplay();
 
       trainingState = 'playing';
@@ -755,6 +1169,7 @@
 
     function stopTraining() {
       trainingState = 'idle';
+      isCompletedStatus = false;
       clearTimers();
       speechSynthesis.cancel();
       clearCardFlashes();
@@ -765,10 +1180,9 @@
 
     function finishTraining() {
       trainingState = 'idle';
+      isCompletedStatus = true;
       clearTimers();
       updateControlsUI();
-      elStatusBadge.textContent = '已完成';
-      elStatusBadge.className = 'badge active';
       elProgressText.textContent = `${playQueue.length} / ${playQueue.length}`;
       elProgressBar.style.width = '100%';
     }
@@ -833,34 +1247,45 @@
         return;
       }
       const acc = Math.round((stats.correct / stats.total) * 100);
-      elScoreDisplay.textContent = `自测正确率: ${stats.correct} / ${stats.total} (${acc}%)`;
+      elScoreDisplay.textContent = t('scoreTemplate', {
+        correct: stats.correct,
+        total: stats.total,
+        acc
+      });
     }
 
     function updateControlsUI() {
       if (trainingState === 'idle') {
         elBtnStart.disabled = false;
-        elBtnStart.textContent = '▶ 开始训练';
+        elBtnStart.textContent = t('btnStart');
         elBtnPause.disabled = true;
-        elBtnPause.textContent = '⏸ 暂停 (Space)';
+        elBtnPause.textContent = t('btnPause');
         elBtnReplayWord.disabled = true;
         elBtnStop.disabled = true;
-        elStatusBadge.textContent = '就绪';
-        elStatusBadge.className = 'badge';
+        if (isCompletedStatus) {
+          elStatusBadge.textContent = t('statusDone');
+          elStatusBadge.className = 'badge active';
+        } else {
+          elStatusBadge.textContent = t('statusReady');
+          elStatusBadge.className = 'badge';
+        }
       } else if (trainingState === 'playing') {
         elBtnStart.disabled = true;
+        elBtnStart.textContent = t('btnStart');
         elBtnPause.disabled = false;
-        elBtnPause.textContent = '⏸ 暂停 (Space)';
+        elBtnPause.textContent = t('btnPause');
         elBtnReplayWord.disabled = false;
         elBtnStop.disabled = false;
-        elStatusBadge.textContent = '播报中';
+        elStatusBadge.textContent = t('statusPlaying');
         elStatusBadge.className = 'badge active';
       } else if (trainingState === 'paused') {
         elBtnStart.disabled = true;
+        elBtnStart.textContent = t('btnStart');
         elBtnPause.disabled = false;
-        elBtnPause.textContent = '▶ 继续 (Space)';
+        elBtnPause.textContent = t('btnResume');
         elBtnReplayWord.disabled = false;
         elBtnStop.disabled = false;
-        elStatusBadge.textContent = '已暂停';
+        elStatusBadge.textContent = t('statusPaused');
         elStatusBadge.className = 'badge paused';
       }
     }
@@ -878,6 +1303,12 @@
     }
 
     function bindEvents() {
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setLanguage(btn.dataset.lang);
+        });
+      });
+
       elDatasetSelect.addEventListener('change', (e) => {
         selectDataset(e.target.value);
       });
@@ -888,8 +1319,8 @@
         }
       });
 
-      elPauseInterval.addEventListener('input', (e) => {
-        elPauseIntervalVal.textContent = `${parseFloat(e.target.value).toFixed(1)} 秒`;
+      elPauseInterval.addEventListener('input', () => {
+        updatePauseIntervalLabel();
       });
 
       elSpeechRate.addEventListener('input', (e) => {
@@ -908,9 +1339,9 @@
         const newId = 'custom_' + Date.now();
         const newDs = {
           id: newId,
-          name: '新建数据集',
+          name: t('newDatasetName'),
           lang: elVoiceSelect.value.split('|||')[0] || 'en-US',
-          pairs: 'apple | 苹果\nbanana | 香蕉\norange | 橙子\ngrape | 葡萄'
+          pairs: t('newDatasetPairs')
         };
         datasets.push(newDs);
         saveDatasetsToStorage();
@@ -920,16 +1351,17 @@
       elBtnSaveSet.addEventListener('click', () => {
         const ds = datasets.find(d => d.id === currentDatasetId);
         if (!ds) return;
-        ds.name = elDatasetName.value.trim() || '未命名数据集';
+        ds.name = elDatasetName.value.trim() || t('unnamedDataset');
         ds.lang = elVoiceSelect.value;
         ds.pairs = elDataPairs.value;
         saveDatasetsToStorage();
         parseAndRenderBoard();
+        showToast(t('msgSaved'));
       });
 
       elBtnDeleteSet.addEventListener('click', () => {
         if (datasets.length <= 1) {
-          alert('至少需要保留一个数据集。');
+          showToast(t('msgKeepOneSet'));
           return;
         }
         datasets = datasets.filter(d => d.id !== currentDatasetId);
