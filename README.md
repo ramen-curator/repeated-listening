@@ -83,7 +83,7 @@ spoken_text | display_label
 
 ## Origin & Credits
 
-- Initial prototype generated with Gemini 4 Argon on October 14, 2026 ([original AI Studio prompt conversation](https://www.google.com/search?q=https://aistudio.google.com/prompts/1t3MhKqE3BqjXn_Hh8lqB5R6oU-dE8vN_)), subsequently expanded with trilingual UI localization (`zh-CN` / `en` / `ja`) and automatic preset translation.
+- Initial prototype generated with Gemini 4 Argon on October 14, 2026 ([original Gemini prompt conversation](https://share.gemini.google/vAmBH7tXSC1R)), subsequently expanded with trilingual UI localization (`zh-CN` / `en` / `ja`) and automatic preset translation.
 - Pedagogical methodology by **Paul Nation**.
 
 ## License

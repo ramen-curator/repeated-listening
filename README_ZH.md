@@ -82,7 +82,7 @@ https://github.com/user-attachments/assets/77227499-52e8-466d-81ee-0597282cb9fa
 
 ## 项目来源与致谢
 
-- 初始原型由 Gemini 4 Argon 于 2026 年 10 月 14 日生成（参见 [AI Studio 原始对话记录](https://www.google.com/search?q=https://aistudio.google.com/prompts/1t3MhKqE3BqjXn_Hh8lqB5R6oU-dE8vN_)），后续扩展了中、英、日三语界面与预设数据集自动本地化机制。
+- 初始原型由 Gemini 4 Argon 于 2026 年 10 月 14 日生成（参见 [Gemini 原始对话记录](https://share.gemini.google/vAmBH7tXSC1R)），后续扩展了中、英、日三语界面与预设数据集自动本地化机制。
 - 语言习得理论与训练方法源自 **Paul Nation**。
 
 ## 开源协议

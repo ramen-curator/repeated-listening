@@ -80,7 +80,7 @@ cinq | 5
 
 ## 開発経緯・クレジット
 
-- 初期プロトタイプは 2026年10月14日に Gemini 4 Argon によって生成され（[AI Studio オリジナル対話ログ](https://www.google.com/search?q=https://aistudio.google.com/prompts/1t3MhKqE3BqjXn_Hh8lqB5R6oU-dE8vN_)）、その後、日・英・中の3言語UI切り替えとプリセット自動ローカライズ機能が追加されました。
+- 初期プロトタイプは 2026年10月14日に Gemini 4 Argon によって生成され（[Gemini オリジナル対話ログ](https://share.gemini.google/vAmBH7tXSC1R)）、その後、日・英・中の3言語UI切り替えとプリセット自動ローカライズ機能が追加されました。
 - 言語習得理論およびトレーニング手法は **Paul Nation** の研究に基づいています。
 
 ## ライセンス
