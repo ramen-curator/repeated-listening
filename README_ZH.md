@@ -30,7 +30,7 @@ https://github.com/user-attachments/assets/77227499-52e8-466d-81ee-0597282cb9fa
 
 ## 理论依据
 
-本工具对应 Paul Nation 语言学习“四主线 (Four Strands)”框架中“流利度发展 (Fluency Development)”主线下的 **活动 6.1：重复听**（参见《学语言你需要知道什么》，[外研社图书介绍页](https://www.fltrp.com/c/2019-09-02/516248.shtml)）：
+本工具对应 Paul Nation 语言学习“四主线 (Four Strands)”框架中“流利度发展 (Fluency Development)”主线下的 **活动 6.1：重复听**（参见《学语言你需要知道什么》，[原资料](https://www.wgtn.ac.nz/lals/resources/paul-nations-resources/paul-nations-publications/publications/documents/foreign-language_1125.pdf)、[原资料的中译](https://github.com/ramen-curator/ation-foreign-language-guide-zh)）：
 
 > **活动 6.1：重复听 (Activity 6.1: Repeated listening)**
 >

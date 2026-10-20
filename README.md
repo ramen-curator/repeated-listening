@@ -31,7 +31,7 @@ https://github.com/user-attachments/assets/77227499-52e8-466d-81ee-0597282cb9fa
 
 ## Pedagogical Background
 
-This tool implements **Activity 6.1: Repeated listening** within the **Fluency Development** strand of Paul Nation's *Four Strands* framework (*What Do You Need to Know to Learn a Foreign Language?*, [FLTRP edition reference](https://www.fltrp.com/c/2019-09-02/516248.shtml)):
+This tool implements **Activity 6.1: Repeated listening** within the **Fluency Development** strand of Paul Nation's *Four Strands* framework (*What Do You Need to Know to Learn a Foreign Language?*, [PDF](https://www.wgtn.ac.nz/lals/resources/paul-nations-resources/paul-nations-publications/publications/documents/foreign-language_1125.pdf)):
 
 > **Activity 6.1: Repeated listening**
 >

@@ -30,7 +30,7 @@ https://github.com/user-attachments/assets/77227499-52e8-466d-81ee-0597282cb9fa
 
 ## 理論的背景
 
-本ツールは、Paul Nation が提唱する言語学習の「4つのストランド (Four Strands)」のうち、「流暢性の向上 (Fluency Development)」に含まれる **Activity 6.1: Repeated listening** を実装したものです（参考：[『What Do You Need to Know to Learn a Foreign Language?』紹介ページ](https://www.fltrp.com/c/2019-09-02/516248.shtml)）：
+本ツールは、Paul Nation が提唱する言語学習の「4つのストランド (Four Strands)」のうち、「流暢性の向上 (Fluency Development)」に含まれる **Activity 6.1: Repeated listening** を実装したものです（参考：[『What Do You Need to Know to Learn a Foreign Language?』](https://www.wgtn.ac.nz/lals/resources/paul-nations-resources/paul-nations-publications/publications/documents/foreign-language_1125.pdf)）：
 
 > **Activity 6.1: Repeated listening（反復リスニング）**
 >
